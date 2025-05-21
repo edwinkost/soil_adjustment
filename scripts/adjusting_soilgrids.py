@@ -60,7 +60,7 @@ corrected_soilWaterStorageCap1 = corrected_satVolWC1 * corrected_firstStorDepth
 
 # corrected properties for the second soil layer
 corrected_satVolWC2            = pcr.ifthenelse(corrected_firstStorDepth <= 0.3, satVolWC1     , satVolWC2)
-corrected_KSat2                = pcr.ifthenelse(corrected_firstStorDepth <= 0.3, KSat1         , KSat12)
+corrected_KSat2                = pcr.ifthenelse(corrected_firstStorDepth <= 0.3, KSat1         , KSat2)
 corrected_airEntryValue2       = pcr.ifthenelse(corrected_firstStorDepth <= 0.3, airEntryValue1, airEntryValue2)
 corrected_poreSizeBeta2        = pcr.ifthenelse(corrected_firstStorDepth <= 0.3, poreSizeBeta1 , poreSizeBeta2)
 corrected_soilWaterStorageCap2 = corrected_satVolWC2 * corrected_secondStorDepth
