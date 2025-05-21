@@ -1,68 +1,66 @@
 
 import pcraster as pcr
+import os
 
-glcc_map   = "/projects/0/dfguu/users/edwin/data/glcc_olson_land_cover_map_and_table/Global_OlsonEcosystem_GLCC_30arc.map"
-glcc_table = 
-# table is taken from http://dx.doi.org/10.17617/2.2344576
+output_folder = "/scratch-shared/edwin/test_adjust_soil_grids/"
+cmd = "mkdir -p " + output_folder
+os.system(cmd)
 
-# soil water capacity based on Hagemann
-soil_water_capacity_hagemann = pcr.lookupscalar(glcc_table, glcc_map)
+# rooting depth (m)
+rooting_depth_file = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/europe_30sec/landSurface/landCover/naturalVegetationAndRainFedCrops/version_2020-12-XX/meanrootdepth_all.map"
+rooting_depth = pcr.readmap(rooting_depth_file)
 
-inputDir     = /projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/
+# set the minimum rooting depth to 10 cm
+rooting_depth = pcr.roundup(rooting_depth * 10.) / 10.
+rooting_depth = pcr.max(0.1, rooting_depth)
 
-soilPropertiesNC = None
-# - if soilPropertiesNC = None, the following soil parameters will be used
-firstStorDepth       = europe_30sec/landSurface/soil/soilgrids/version_2021-02-XX/layerDepth_average_1_europe_30sec.nc
-secondStorDepth      = europe_30sec/landSurface/soil/soilgrids/version_2021-02-XX/layerDepth_average_2_europe_30sec.nc
-soilWaterStorageCap1 = europe_30sec/landSurface/soil/soilgrids/version_2021-02-XX/WHC_average_1_europe_30sec.nc
-soilWaterStorageCap2 = europe_30sec/landSurface/soil/soilgrids/version_2021-02-XX/WHC_average_2_europe_30sec.nc
-airEntryValue1       = europe_30sec/landSurface/soil/soilgrids/version_2021-02-XX/psiAir_average_1_europe_30sec.nc
-airEntryValue2       = europe_30sec/landSurface/soil/soilgrids/version_2021-02-XX/psiAir_average_2_europe_30sec.nc
-poreSizeBeta1        = europe_30sec/landSurface/soil/soilgrids/version_2021-02-XX/BCH_average_1_europe_30sec.nc
-poreSizeBeta2        = europe_30sec/landSurface/soil/soilgrids/version_2021-02-XX/BCH_average_2_europe_30sec.nc
-resVolWC1            = europe_30sec/landSurface/soil/soilgrids/version_2021-02-XX/vmcRes_average_1_europe_30sec.nc
-resVolWC2            = europe_30sec/landSurface/soil/soilgrids/version_2021-02-XX/vmcRes_average_2_europe_30sec.nc
-satVolWC1            = europe_30sec/landSurface/soil/soilgrids/version_2021-02-XX/vmcSat_average_1_europe_30sec.nc
-satVolWC2            = europe_30sec/landSurface/soil/soilgrids/version_2021-02-XX/vmcSat_average_2_europe_30sec.nc
-KSat1                = europe_30sec/landSurface/soil/soilgrids/version_2021-02-XX/kSat_average_1_europe_30sec.nc
-KSat2                = europe_30sec/landSurface/soil/soilgrids/version_2021-02-XX/kSat_average_2_europe_30sec.nc
+# set the maximum rooting depth to 150 cm
+rooting_depth = pcr.min(1.5, rooting_depth)
+
+# original soil grids
+firstStorDepth       = 0.3 
+secondStorDepth      = 1.2 
+resVolWC1            = 0.0 
+resVolWC2            = 0.0 
+satVolWC1            = pcr.readmap("/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/europe_30sec//landSurface/soil/soilgrids/version_2021-02-XX//maps/vmcSat_average_1_europe_30sec.map"    )
+satVolWC2            = pcr.readmap("/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/europe_30sec//landSurface/soil/soilgrids/version_2021-02-XX//maps/vmcSat_average_2_europe_30sec.map"    )
+KSat1                = pcr.readmap("/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/europe_30sec//landSurface/soil/soilgrids/version_2021-02-XX//maps/kSat_average_1_europe_30sec.map"      )
+KSat2                = pcr.readmap("/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/europe_30sec//landSurface/soil/soilgrids/version_2021-02-XX//maps/kSat_average_2_europe_30sec.map"      )
+airEntryValue1       = pcr.readmap("/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/europe_30sec//landSurface/soil/soilgrids/version_2021-02-XX//maps/psiAir_average_1_europe_30sec.map"    )
+airEntryValue2       = pcr.readmap("/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/europe_30sec//landSurface/soil/soilgrids/version_2021-02-XX//maps/psiAir_average_2_europe_30sec.map"    )
+poreSizeBeta1        = pcr.readmap("/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/europe_30sec//landSurface/soil/soilgrids/version_2021-02-XX//maps/BCH_average_1_europe_30sec.map"       )
+poreSizeBeta2        = pcr.readmap("/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/europe_30sec//landSurface/soil/soilgrids/version_2021-02-XX//maps/BCH_average_2_europe_30sec.map"       )
+soilWaterStorageCap1 = pcr.readmap("/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/europe_30sec//landSurface/soil/soilgrids/version_2021-02-XX//maps/WHC_average_1_europe_30sec.map"       )
+soilWaterStorageCap2 = pcr.readmap("/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/europe_30sec//landSurface/soil/soilgrids/version_2021-02-XX//maps/WHC_average_2_europe_30sec.map"       )
 
 
-# soil water capacity based on soil grids
-soilWaterStorageCap1 = pcr.readmap()
-soilWaterStorageCap2 = pcr.readmap()
+# get the corrected thickness for the first soil layer
+corrected_firstStorDepth = pcr.min(rooting_depth, firstStorDepth)
+# - set the minimum thickness to 5 cm
+corrected_firstStorDepth = pcr.max(0.05, corrected_firstStorDepth)
+pcr.report(corrected_firstStorDepth , output_folder + "corrected_firstStorDepth.map")
 
-soil_water_capacity_soil_grids =  + soilWaterStorageCap1 + soilWaterStorageCap2 
+# get the corrected thickness for the second soil layer
+corrected_secondStorDepth = pcr.min(rooting_depth - corrected_firstStorDepth, secondStorDepth)
+# - set the minimum thickness to 5 cm
+corrected_secondStorDepth = pcr.max(0.05, corrected_secondStorDepth)
+pcr.report(corrected_secondStorDepth , output_folder + "corrected_secondStorDepth.map")
 
-depth_correction_factor = pcr.min(1.0, soil_water_capacity_hagemann / soil_water_capacity_soil_grids)
+# recalculate the total thickness, set the maximum to 150 cm
+corrected_totalDepth = pcr.min(1.5, corrected_firstStorDepth + corrected_secondStorDepth)
+check = corrected_totalDepth - (corrected_firstStorDepth + corrected_secondStorDepth)
+pcr.aguila(check) 
 
-firstStorDepth  = 0.3
-secondStorDepth = 1.2
-corrected_totalDepth = depth_correction_factor * (firstStorDepth + secondStorDepth)
+# corrected properties for the first soil layer
+corrected_satVolWC1            = satVolWC1
+corrected_KSat1                = KSat1
+corrected_airEntryValue1       = airEntryValue1
+corrected_poreSizeBeta1        = poreSizeBeta1
+corrected_soilWaterStorageCap1 = corrected_satVolWC1 * corrected_firstStorDepth
 
-# adjust soil thickness
-corrected_firstStorDepth  = pcr.max(0.05, pcr.min(corrected_totalDepth, firstStorDepth))
-corrected_secondStorDepth = pcr.max(0.05, pcr.min(corrected_totalDepth - corrected_firstStorDepth, secondStorDepth))
-
-# adjust porosity
-corrected_satVolWC1       = satVolWC1 
-corrected_satVolWC2       = pcr.ifthenelse(corrected_firstStorDepth < firstStorDepth, satVolWC1, satVolWC2)
-# - TODO: CORRECT this as there is a chance that the new second soil layer crosses the 0.3 original soil thickness
-
-# adjust airEntryValue, KSat and poreSizeBeta - as above
-
-# recalculate soilWaterStorageCap
-corrected_soilWaterStorageCap1 = corrected_firstStorDepth  / corrected_satVolWC1
-corrected_soilWaterStorageCap2 = corrected_secondStorDepth / corrected_satVolWC2
-
-# 
-
-corrected_airEntryValue1       = 
-corrected_airEntryValue2       = 
-corrected_poreSizeBeta1        = 
-corrected_poreSizeBeta2        = 
-corrected_resVolWC1            = 
-corrected_resVolWC2            = 
-corrected_KSat1                = 
-corrected_KSat2                = 
-
+# corrected properties for the second soil layer
+corrected_satVolWC2            = pcr.ifthenelse(corrected_firstStorDepth <= 0.3, satVolWC1     , satVolWC2)
+corrected_KSat2                = pcr.ifthenelse(corrected_firstStorDepth <= 0.3, KSat1         , KSat12)
+corrected_airEntryValue2       = pcr.ifthenelse(corrected_firstStorDepth <= 0.3, airEntryValue1, airEntryValue2)
+corrected_poreSizeBeta2        = pcr.ifthenelse(corrected_firstStorDepth <= 0.3, poreSizeBeta1 , poreSizeBeta2)
+corrected_soilWaterStorageCap2 = corrected_satVolWC2 * corrected_secondStorDepth
